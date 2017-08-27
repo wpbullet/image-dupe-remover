@@ -11,9 +11,14 @@ do
     DUPEFIND=$(wp db search "$DUPE" --stats --allow-root | tail -1 | awk '{print $3}')
     #DUPEFINDESCAPED use sed to replace / with \/ and search for that too!
     #DUPEFINDESCAPED=$(wp db search $(echo "$DUPE" | sed 's#/#\\/#g') --stats --allow-root | awk '{print $3}')
-    if [ "$DUPEFIND "= 0 ]; then # || [ "$DUPEFINDESCAPED" = 0 ]; then
-         echo $DUPE >> /tmp/herp
-         echo "Not in database"
+    if [ "$DUPEFIND" = 0 ]; then # || [ "$DUPEFINDESCAPED" = 0 ]; then
+
+        DUPEFINDESCAPED=$(wp db search $(echo "$DUPE" | sed 's#/#\\/#g') --stats --allow-root | awk '{print $3}')
+
+        if [ "$DUPEFINDESCAPED" = 0 ]; then
+            echo $DUPE >> /tmp/herp
+            echo "Not in database"
+        fi
     else
         echo "In database, skipping"
     fi
