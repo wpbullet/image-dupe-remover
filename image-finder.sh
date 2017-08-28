@@ -27,8 +27,12 @@ do
 #        DUPEFINDESCAPED=$(wp db search "$(echo "$DUPE" | sed 's#/#\\/#g')" --stats --allow-root | awk '{print $3}')
         DUPEFINDESCAPED=$(wp db search "${DUPE////\\/}" --stats --allow-root | tail -1 | awk '{print $3}')
         if [ "$DUPEFINDESCAPED" = 0 ]; then
-            echo "$DUPE" >> "$DUPELOG"
-            echo "Not in database"
+            # to be sure search URL encode version %2F
+            DUPEFINDURLENCODE=$(wp db search "${DUPE////%2F}" --stats --allow-root | tail -1 | awk '{print $3}')
+            if [ "$DUPEFINDESCAPED" = 0 ]; then
+                echo "$DUPE" >> "$DUPELOG"
+                echo "Not in database"
+            fi
         fi
     else
         echo "In database, skipping"
